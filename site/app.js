@@ -211,7 +211,9 @@ const App = (() => {
         : '<path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/>';
       return `<th scope="col" aria-sort="${sort}"><button class="th-sort${on ? ' on' : ''}" type="button" data-col-sort="${c.key}">${c.label}<svg class="i" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">${path}</svg></button></th>`;
     }).join('');
+    /* Fixed widths (Figma list view: 240, 168, 343, 183, 195 of 1129), so filtering or sorting never moves the columns. */
     wrap.innerHTML = `<table>
+      <colgroup><col style="width:21.3%"><col style="width:14.9%"><col style="width:30.4%"><col style="width:16.2%"><col style="width:13.7%"><col style="width:3.5%"></colgroup>
       <thead><tr>${head}<th scope="col"><span class="sr">Open</span></th></tr></thead>
       <tbody>${rows.map(rowHTML).join('')}</tbody></table>
       ${items.length > TABLE_CHUNK ? `<p class="table-note"><button class="btn outline more" type="button" data-more-rows>Show more (${items.length - TABLE_CHUNK} left)</button></p>` : ''}`;
@@ -222,7 +224,7 @@ const App = (() => {
     const s = D.STAGES[item.stage];
     return `<tr tabindex="0" data-item="${item.id}">
       <td>${esc(item.patient.name)}</td><td>${D.fmtDate(item.patient.dob)}</td>
-      <td>${esc(item.med.name)}${item.interim ? ` <span class="interim inline" data-tip-text="Interim pharmacy, not part of Well"><img src="icons/interim.svg" alt="Interim pharmacy"></span>` : ''}</td>
+      <td title="${esc(item.med.name)}">${esc(item.med.name)}${item.interim ? ` <span class="interim inline" data-tip-text="Interim pharmacy, not part of Well"><img src="icons/interim.svg" alt="Interim pharmacy"></span>` : ''}</td>
       <td>${D.fmtDate(item.rx)}</td><td><span class="badge ${s.badge}">${esc(s.title)}</span></td>
       <td class="go"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg></td></tr>`;
   }

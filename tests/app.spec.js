@@ -125,6 +125,18 @@ test.describe('cycle board', () => {
     await expect(page.locator('th[aria-sort="ascending"]')).toHaveText('Date of birth');
   });
 
+  test('table columns keep their width when filtering and sorting', async ({ page }) => {
+    await page.goto(PAGE);
+    await page.getByRole('radio', { name: 'Table' }).click();
+    const widths = () => page.locator('[data-table] th').evaluateAll(ths => ths.map(t => Math.round(t.getBoundingClientRect().width)));
+    const before = await widths();
+    await page.locator('[data-search]').fill('Hill');
+    await expect(page.locator('[data-table] tbody tr').first()).toContainText('Hill');
+    expect(await widths()).toEqual(before);
+    await page.locator('[data-col-sort="item"]').click();
+    expect(await widths()).toEqual(before);
+  });
+
   test('a past cycle is read only with two columns', async ({ page }) => {
     await page.goto(PAGE);
     await page.locator('[data-prev]').click();

@@ -277,7 +277,7 @@ img { display: block; }
 
 /* ---------- table ---------- */
 .table-wrap { padding: 24px; overflow-x: auto; }
-table { width: 100%; border-collapse: collapse; min-width: 760px; }
+table { width: 100%; border-collapse: collapse; min-width: 760px; table-layout: fixed; }
 th { text-align: left; font-weight: 400; color: var(--muted); padding: 10px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; }
 .th-sort {
   display: inline-flex; align-items: center; gap: 6px; margin: -4px -6px; padding: 4px 6px; border: 0; border-radius: 6px;
@@ -287,7 +287,7 @@ th { text-align: left; font-weight: 400; color: var(--muted); padding: 10px 8px;
 .th-sort .i { opacity: .45; }
 .th-sort.on { color: var(--fg); font-weight: 500; }
 .th-sort.on .i { opacity: 1; }
-td { padding: 14px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; font-variant-numeric: tabular-nums; }
+td { padding: 14px 8px; border-bottom: 1px solid var(--border); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-variant-numeric: tabular-nums; }
 td:first-child { font-weight: 600; }
 tbody tr { cursor: pointer; }
 tbody tr:hover td { background: #fafafa; }
