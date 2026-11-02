@@ -1,0 +1,10 @@
+{
+  "name": "well-medication-cycles",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node scripts/serve.mjs 4810",
+    "test": "playwright test"
+  },
+  "devDependencies": { "@playwright/test": "^1.48.0" }
+}

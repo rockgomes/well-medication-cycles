@@ -1,0 +1,10 @@
+[build]
+  publish = "site"
+  command = ""
+
+# The prototype is embedded in rockgomes.com as an iframe.
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Content-Security-Policy = "frame-ancestors 'self' https://www.rockgomes.com https://rockgomes.com https://*.netlify.app http://localhost:*"
+    X-Robots-Tag = "noindex"
