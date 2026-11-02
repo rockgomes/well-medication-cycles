@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Well cycle board, working copy</title>
+<meta name="description" content="A working copy of the Well medication cycle board, built from the Figma design. Fake data only.">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<!-- Loads without blocking the page; a slow font server never stops the app from starting. -->
+<link href="https://fonts.googleapis.com/css2?family=Figtree:wght@300;400;500;600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <img class="logo" src="icons/logo.svg" width="93" height="32" alt="Well">
+  <nav class="crumbs" aria-label="Breadcrumb">
+    <span>Carehomes</span>
+    <img src="icons/chevron-right.svg" width="15" height="15" alt="">
+    <span class="here" aria-current="page" data-home-name></span>
+  </nav>
+  <div class="topbar-right">
+    <label class="input global-search">
+      <img src="icons/search.svg" width="16" height="16" alt="">
+      <input type="search" placeholder="Search..." aria-label="Search everything" disabled title="Not part of this working copy">
+    </label>
+    <button class="btn icon round" type="button" aria-label="Your account" disabled><img src="icons/user-header.svg" width="16" height="16" alt=""></button>
+  </div>
+</header>
+
+<div class="shell">
+  <nav class="rail" aria-label="Main">
+    <div class="rail-group">
+      <span class="rail-item" title="Home"><img src="icons/nav-home.svg" width="20" height="20" alt=""></span>
+      <span class="rail-item" title="Orders"><img src="icons/nav-cart.svg" width="20" height="20" alt=""></span>
+      <span class="rail-item" title="Pharmacy"><img src="icons/nav-briefcase.svg" width="20" height="20" alt=""></span>
+      <span class="rail-item current" title="Care homes"><img src="icons/hospital-current.svg" width="16" height="16" alt=""></span>
+      <span class="rail-item" title="Patients"><img src="icons/nav-hand-heart.svg" width="20" height="20" alt=""></span>
+      <span class="rail-item" title="Clinical"><img src="icons/nav-shield.svg" width="20" height="20" alt=""></span>
+    </div>
+    <div class="rail-group">
+      <span class="rail-item" title="Scan QR code"><img src="icons/nav-qr.svg" width="20" height="20" alt=""></span>
+    </div>
+  </nav>
+
+  <main class="content" id="main">
+    <section class="card profile" aria-label="Care home">
+      <div class="profile-top">
+        <div class="profile-id">
+          <div>
+            <div class="profile-name">
+              <h1 data-home-name></h1>
+              <span class="btn icon secondary static" aria-hidden="true"><img src="icons/hospital.svg" width="16" height="16" alt=""></span>
+            </div>
+            <p class="profile-address" data-home-address></p>
+          </div>
+          <dl class="facts">
+            <div><dt>Beds</dt><dd data-home-beds></dd></div>
+            <div><dt>Occupied</dt><dd data-home-occupied></dd></div>
+          </dl>
+        </div>
+        <div class="profile-actions">
+          <div class="split">
+            <button class="btn outline" type="button" disabled><img src="icons/user-round.svg" width="16" height="16" alt=""><span data-home-contact></span></button>
+            <button class="btn outline icon" type="button" aria-label="More contacts" disabled><img src="icons/chevron-down-dark.svg" width="16" height="16" alt=""></button>
+          </div>
+          <button class="btn primary icon" type="button" aria-label="Email the care home" disabled><img src="icons/mail.svg" width="16" height="16" alt=""></button>
+          <button class="btn outline icon" type="button" aria-label="More actions" disabled><img src="icons/ellipsis-vertical.svg" width="16" height="16" alt=""></button>
+        </div>
+      </div>
+      <nav class="tabs" aria-label="Care home sections">
+        <a class="tab current" href="#main" aria-current="page">Cycles</a>
+        <span class="tab">Interims and owings</span>
+        <span class="tab">Activity</span>
+        <span class="tab">Patients</span>
+        <span class="tab">Contacts</span>
+        <span class="tab">GP Surgery</span>
+        <span class="tab">Units</span>
+      </nav>
+    </section>
+
+    <section class="card cycle-nav" data-tour="cycles" aria-label="Cycle">
+      <button class="btn outline" type="button" data-prev><img src="icons/arrow-left.svg" width="16" height="16" alt=""><span>Previous</span></button>
+      <div class="cycle-mid">
+        <div class="menu-wrap">
+          <button class="btn secondary" type="button" data-cycle-menu aria-haspopup="menu" aria-expanded="false">
+            <img src="icons/calendar.svg" width="16" height="16" alt="">
+            <span data-cycle-range></span>
+            <img src="icons/chevron-down-brand.svg" width="16" height="16" alt="">
+          </button>
+          <div class="menu" role="menu" data-cycle-list hidden></div>
+        </div>
+        <span class="dispatch" data-dispatch></span>
+        <span class="pill" data-cycle-pill></span>
+      </div>
+      <button class="btn outline" type="button" data-next><span>Next</span><img src="icons/arrow-right.svg" width="16" height="16" alt=""></button>
+    </section>
+
+    <div class="banner" data-banner hidden>
+      <p>
+        <svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <strong>Read only</strong><span data-banner-text></span>
+        <button class="btn outline small" type="button" data-edit-arrival hidden>Edit arrival date</button>
+      </p>
+      <button class="link" type="button" data-back-current>
+        Back to current cycle
+        <svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 14 4 9l5-5"/><path d="M4 9h10.5a5.5 5.5 0 0 1 0 11H11"/></svg>
+      </button>
+    </div>
+
+    <div class="toolbar" data-tour="toolbar">
+      <div class="search-wrap">
+        <label class="input">
+          <img src="icons/search.svg" width="16" height="16" alt="">
+          <input type="search" placeholder="Search patients" aria-label="Search patients by name or NHS number"
+                 data-search autocomplete="off" role="combobox" aria-expanded="false" aria-controls="search-results">
+        </label>
+        <ul class="menu suggest" id="search-results" role="listbox" data-suggest hidden></ul>
+      </div>
+      <div class="toolbar-right">
+        <div class="menu-wrap">
+          <button class="btn outline" type="button" data-sort-btn aria-haspopup="menu" aria-expanded="false">
+            <img src="icons/list-filter.svg" width="16" height="16" alt="">
+            <span data-sort-label>Sorting</span>
+            <img src="icons/chevron-down.svg" width="16" height="16" alt="">
+          </button>
+          <div class="menu right" role="menu" data-sort-list hidden></div>
+        </div>
+        <div class="seg" role="radiogroup" aria-label="View" data-tour="views">
+          <button type="button" role="radio" aria-checked="true" aria-label="Board" data-view="board"><img src="icons/square-kanban.svg" width="16" height="16" alt=""></button>
+          <button type="button" role="radio" aria-checked="false" aria-label="Table" data-view="table"><img src="icons/table-properties.svg" width="16" height="16" alt=""></button>
+        </div>
+      </div>
+    </div>
+    <div class="chips" data-chips hidden></div>
+
+    <div class="board" data-board data-tour="board" tabindex="-1" aria-label="Cycle board"></div>
+    <div class="card table-wrap" data-table hidden></div>
+    <p class="empty" data-empty hidden>No orders match this search.</p>
+  </main>
+</div>
+
+<!-- Order -->
+<div class="scrim" data-scrim hidden></div>
+<div class="dialog" role="dialog" aria-modal="true" aria-labelledby="order-title" data-order hidden>
+  <div class="dialog-body" data-order-body></div>
+  <div class="dialog-foot"><button class="btn outline" type="button" data-close>Close</button></div>
+  <button class="x" type="button" aria-label="Close" data-close><img src="icons/x.svg" width="16" height="16" alt=""></button>
+</div>
+
+<!-- Cycle dates -->
+<aside class="sheet" role="dialog" aria-modal="true" aria-labelledby="dates-title" data-dates hidden>
+  <header class="sheet-head">
+    <span class="sheet-icon"><img src="icons/calendar.svg" width="16" height="16" alt=""></span>
+    <h2 id="dates-title">Cycle dates</h2>
+    <button class="x" type="button" aria-label="Close" data-dates-close><img src="icons/x.svg" width="16" height="16" alt=""></button>
+  </header>
+  <div class="sheet-body">
+    <div class="alert">
+      <span class="alert-icon"><svg class="i" width="16" height="16" viewBox="0 0 24 24" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
+      <p>This edit will only apply to the <span data-dates-cycle></span> cycle.</p>
+    </div>
+    <div class="field"><span class="field-label">Start date</span><span class="input readonly"><img src="icons/calendar.svg" width="16" height="16" alt=""><span data-d-start></span></span></div>
+    <div class="field"><span class="field-label">Dispatch date</span><span class="input readonly"><img src="icons/calendar.svg" width="16" height="16" alt=""><span data-d-dispatch></span></span></div>
+    <div class="field"><span class="field-label" id="arrival-label">Arrival date</span><span class="input active"><img src="icons/calendar.svg" width="16" height="16" alt=""><span data-d-arrival></span></span></div>
+    <div class="cal" data-cal aria-labelledby="arrival-label"></div>
+    <ul class="legend">
+      <li><i class="today"></i>Today</li><li><i class="start"></i>Start date</li><li><i class="dispatch"></i>Dispatch</li><li><i class="arrival"></i>Arrival</li>
+    </ul>
+  </div>
+  <footer class="sheet-foot">
+    <button class="btn outline" type="button" data-dates-close>Cancel</button>
+    <button class="btn primary" type="button" data-dates-confirm>Confirm</button>
+  </footer>
+</aside>
+
+<div class="toast" role="status" data-toast hidden></div>
+<div class="tip" role="tooltip" id="tip" data-tip hidden></div>
+
+<!-- Guided tour -->
+<div class="tour-hole" data-tour-hole hidden></div>
+<div class="tour-card" role="dialog" aria-modal="false" aria-labelledby="tour-title" aria-describedby="tour-text" data-tour-card hidden>
+  <p class="tour-step" data-tour-step></p>
+  <h2 id="tour-title" data-tour-title></h2>
+  <p id="tour-text" data-tour-text></p>
+  <div class="tour-nav">
+    <div class="tour-dots" data-tour-dots aria-hidden="true"></div>
+    <button class="btn ghost small" type="button" data-tour-back>Back</button>
+    <button class="btn primary small" type="button" data-tour-next>Next</button>
+  </div>
+  <button class="x" type="button" aria-label="Leave the tour" data-tour-exit><img src="icons/x.svg" width="16" height="16" alt=""></button>
+</div>
+<button class="tour-launch" type="button" data-tour-launch hidden>Take the tour</button>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+<script src="tour.js"></script>
+</body>
+</html>
