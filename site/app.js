@@ -25,6 +25,25 @@ const App = (() => {
   ];
 
   const state = { index: current, view: 'board', sort: null, chips: [], text: '' };
+  /* Table only: click a column header to sort by it. null = the toolbar sort. */
+  state.col = null;   /* { key, dir } */
+
+  const STAGE_ORDER = Object.keys(D.STAGES);
+  const COLS = [
+    { key: 'name', label: 'Patient name', get: i => i.patient.name },
+    { key: 'dob', label: 'Date of birth', get: i => +i.patient.dob },
+    { key: 'item', label: 'Item name', get: i => i.med.name },
+    { key: 'rx', label: 'Rx received date', get: i => +i.rx },
+    { key: 'status', label: 'Status', get: i => STAGE_ORDER.indexOf(i.stage) },
+  ];
+  function sortByColumn(list) {
+    const c = state.col && COLS.find(x => x.key === state.col.key);
+    if (!c) return list;
+    return list.slice().sort((a, b) => {
+      const x = c.get(a), y = c.get(b);
+      return (typeof x === 'string' ? x.localeCompare(y, 'en-GB') : x - y) * state.col.dir;
+    });
+  }
 
   function cycle(index = state.index) {
     if (!cache.has(index)) cache.set(index, D.buildCycle(index, today, residents));
@@ -181,11 +200,19 @@ const App = (() => {
   /* ---------- table ---------- */
   const TABLE_CHUNK = 60;
   function renderTable() {
-    const items = visibleItems();
+    const items = sortByColumn(visibleItems());
     const wrap = $('[data-table]');
     const rows = items.slice(0, TABLE_CHUNK);
+    const head = COLS.map(c => {
+      const on = state.col?.key === c.key ? state.col.dir : 0;
+      const sort = on === 1 ? 'ascending' : on === -1 ? 'descending' : 'none';
+      const path = on === 1 ? '<path d="m5 12 7-7 7 7"/><path d="M12 19V5"/>'
+        : on === -1 ? '<path d="M12 5v14"/><path d="m19 12-7 7-7-7"/>'
+        : '<path d="m21 16-4 4-4-4"/><path d="M17 20V4"/><path d="m3 8 4-4 4 4"/><path d="M7 4v16"/>';
+      return `<th scope="col" aria-sort="${sort}"><button class="th-sort${on ? ' on' : ''}" type="button" data-col-sort="${c.key}">${c.label}<svg class="i" width="14" height="14" viewBox="0 0 24 24" aria-hidden="true">${path}</svg></button></th>`;
+    }).join('');
     wrap.innerHTML = `<table>
-      <thead><tr><th scope="col">Patient name</th><th scope="col">Date of birth</th><th scope="col">Item name</th><th scope="col">Rx received date</th><th scope="col">Status</th><th scope="col"><span class="sr">Open</span></th></tr></thead>
+      <thead><tr>${head}<th scope="col"><span class="sr">Open</span></th></tr></thead>
       <tbody>${rows.map(rowHTML).join('')}</tbody></table>
       ${items.length > TABLE_CHUNK ? `<p class="table-note"><button class="btn outline more" type="button" data-more-rows>Show more (${items.length - TABLE_CHUNK} left)</button></p>` : ''}`;
     wrap._items = items;
@@ -460,6 +487,7 @@ const App = (() => {
       const b = e.target.closest('[data-sort]');
       if (!b) return;
       state.sort = b.dataset.sort;
+      state.col = null;
       closeMenus();
       render();
       $('[data-sort-btn]').focus();
@@ -498,6 +526,15 @@ const App = (() => {
       const card = e.target.closest('[data-item]');
       if (card && !e.target.closest('[data-order]')) openOrder(findItem(card.dataset.item));
       if (e.target.closest('[data-more-rows]')) moreRows();
+      const colBtn = e.target.closest('[data-col-sort]');
+      if (colBtn) {
+        /* A to Z, then Z to A, then back to the toolbar sort. */
+        const key = colBtn.dataset.colSort;
+        const dir = state.col?.key === key ? state.col.dir : 0;
+        state.col = dir === 0 ? { key, dir: 1 } : dir === 1 ? { key, dir: -1 } : null;
+        render();
+        $(`[data-col-sort="${key}"]`)?.focus();
+      }
       if (e.target.closest('[data-close]')) closeOrder();
       if (e.target.closest('[data-dates-close]')) closeDates();
       if (e.target.matches('[data-scrim]')) { closeOrder(); closeDates(); }
@@ -554,7 +591,7 @@ const App = (() => {
   function snapshot() { return JSON.stringify({ ...state, edits: [...arrivalEdits] }); }
   function restore(snap) {
     const s = JSON.parse(snap);
-    Object.assign(state, { index: s.index, view: s.view, sort: s.sort, chips: s.chips, text: s.text });
+    Object.assign(state, { index: s.index, view: s.view, sort: s.sort, col: s.col, chips: s.chips, text: s.text });
     arrivalEdits.clear();
     for (const [k, v] of s.edits) arrivalEdits.set(k, new Date(v));
     for (const c of cache.values()) { const r = D.cycleAt(c.index); if (!arrivalEdits.has(c.index)) { c.arrival = r.arrival; c.end = r.end; } }

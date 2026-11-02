@@ -102,6 +102,29 @@ test.describe('cycle board', () => {
     await expect(page.locator('[data-order]')).toBeVisible();
   });
 
+  test('table column headers sort A to Z, Z to A, then back', async ({ page }) => {
+    await page.goto(PAGE);
+    await page.getByRole('radio', { name: 'Table' }).click();
+    const first = () => page.locator('[data-table] tbody td:first-child').allInnerTexts();
+    const before = await first();
+    const btn = page.locator('[data-col-sort="name"]');
+    await btn.click();
+    await expect(page.locator('th[aria-sort="ascending"]')).toHaveText('Patient name');
+    const asc = await first();
+    expect(asc).toEqual([...asc].sort((a, b) => a.localeCompare(b, 'en-GB')));
+    await btn.click();
+    await expect(page.locator('th[aria-sort="descending"]')).toHaveText('Patient name');
+    const desc = await first();
+    expect(desc).toEqual([...desc].sort((a, b) => b.localeCompare(a, 'en-GB')));
+    await btn.click();
+    await expect(page.locator('th[aria-sort="ascending"], th[aria-sort="descending"]')).toHaveCount(0);
+    expect(await first()).toEqual(before);
+    /* Keyboard works too. */
+    await page.locator('[data-col-sort="dob"]').focus();
+    await page.keyboard.press('Enter');
+    await expect(page.locator('th[aria-sort="ascending"]')).toHaveText('Date of birth');
+  });
+
   test('a past cycle is read only with two columns', async ({ page }) => {
     await page.goto(PAGE);
     await page.locator('[data-prev]').click();
