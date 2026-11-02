@@ -99,7 +99,7 @@ const App = (() => {
 
   /* ---------- board ---------- */
   const CHUNK = 30;
-  let observer = null;
+  let observers = [];
 
   function cardHTML(item) {
     const p = item.patient;
@@ -125,7 +125,7 @@ const App = (() => {
     const c = cycle();
     const items = visibleItems(c);
     const board = $('[data-board]');
-    if (observer) observer.disconnect();
+    observers.forEach(o => o.disconnect()); observers = [];
     board.classList.toggle('two', c.columns.length === 2);
     const total = items.length || 1;
     const groups = Object.fromEntries(c.columns.map(k => [k, []]));
@@ -145,15 +145,19 @@ const App = (() => {
       </section>`;
     }).join('');
 
-    observer = new IntersectionObserver(entries => {
-      for (const e of entries) if (e.isIntersecting) fillColumn(e.target.dataset.sentinel);
-    }, { rootMargin: '800px 0px' });
     for (const key of c.columns) {
       const box = $(`[data-cards="${key}"]`, board);
       box._items = groups[key];
       box._shown = 0;
+      /* Each column scrolls on its own, so each one watches its own scroll for the next batch. */
+      box._io = new IntersectionObserver(entries => {
+        for (const e of entries) if (e.isIntersecting) fillColumn(key);
+      }, { root: box, rootMargin: '0px 0px 800px 0px' });
+      observers.push(box._io);
+      box.addEventListener('scroll', () => box.parentElement.classList.toggle('scrolled', box.scrollTop > 0), { passive: true });
       fillColumn(key);
     }
+    fitBoard();
     requestAnimationFrame(() => $$('.fill', board).forEach(f => { f.style.width = `${f.dataset.w}%`; }));
   }
 
@@ -169,7 +173,7 @@ const App = (() => {
       s.dataset.sentinel = key;
       s.style.height = '1px';
       box.appendChild(s);
-      observer.observe(s);
+      box._io.observe(s);
     }
     if (box._items.length) box.style.marginTop = '0';
   }
@@ -205,6 +209,20 @@ const App = (() => {
     if (left > 0) btn.textContent = `Show more (${left} left)`;
     else btn.parentElement.remove();
   }
+
+  /* ---------- board height ----------
+     Like Trello: the page scrolls until the cycle bar (Previous / Next) reaches the top bar,
+     then stops. The board fills the rest of the screen and each column scrolls on its own. */
+  const TOPBAR = 64;
+  const GAP = 12;
+  function fitBoard() {
+    const board = $('[data-board]');
+    if (board.hidden) return;
+    const stack = board.getBoundingClientRect().top - $('[data-tour="cycles"]').getBoundingClientRect().top;
+    const pad = parseFloat(getComputedStyle($('.content')).paddingBottom) || 0;
+    board.style.height = `${Math.max(360, innerHeight - TOPBAR - GAP - stack - pad)}px`;
+  }
+  function maxPageScroll() { return document.documentElement.scrollHeight - innerHeight; }
 
   /* ---------- render all ---------- */
   function render() {
@@ -549,6 +567,19 @@ const App = (() => {
   fillHome();
   bind();
   render();
+
+  addEventListener('resize', fitBoard);
+  const ro = new ResizeObserver(fitBoard);
+  ['[data-tour="cycles"]', '[data-banner]', '[data-tour="toolbar"]', '[data-chips]'].forEach(sel => ro.observe($(sel)));
+  /* Scrolling down over a column moves the page first, until the cycle bar reaches the top. */
+  $('[data-board]').addEventListener('wheel', e => {
+    if (e.deltaY <= 0 || e.ctrlKey || Math.abs(e.deltaX) > Math.abs(e.deltaY)) return;
+    const room = maxPageScroll() - scrollY;
+    if (room < 1) return;
+    e.preventDefault();
+    const dy = e.deltaMode === 1 ? e.deltaY * 16 : e.deltaMode === 2 ? e.deltaY * innerHeight : e.deltaY;
+    scrollBy({ top: Math.min(dy, room), behavior: 'instant' });
+  }, { passive: false });
 
   return {
     state, current, today, goTo, render, openOrder, closeOrder, openDates, closeDates, closeMenus,

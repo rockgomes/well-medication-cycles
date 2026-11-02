@@ -116,7 +116,7 @@ img { display: block; }
 .rail-item { width: 32px; height: 32px; display: grid; place-items: center; border-radius: var(--r-lg); }
 .rail-item.current { background: var(--brand-50); border-radius: 999px; }
 
-.content { flex: 1; min-width: 0; padding: 16px 24px 48px; display: flex; flex-direction: column; gap: 12px; }
+.content { flex: 1; min-width: 0; padding: 16px 24px 16px; display: flex; flex-direction: column; gap: 12px; }
 
 /* ---------- care home header ---------- */
 .card { background: #fff; border: 1px solid var(--border); border-radius: var(--r-lg); box-shadow: var(--shadow-xs); }
@@ -208,16 +208,20 @@ img { display: block; }
 
 /* ---------- board ---------- */
 .board {
-  display: flex; gap: 12px; align-items: flex-start; overflow-x: auto; overscroll-behavior-x: contain;
+  display: flex; gap: 12px; align-items: flex-start; overflow-x: auto; overflow-y: hidden; overscroll-behavior-x: contain;
   margin: 0 -24px; padding: 0 24px 12px; scroll-padding: 0 24px; outline: none;
 }
+/* A column is as tall as its cards, up to the board height; then its card list scrolls (like Trello). */
 .col {
-  flex: none; width: 336px; background: #fff; border: 1px solid var(--border); border-radius: var(--r-xl);
-  box-shadow: var(--shadow-sm); padding: 16px;
+  flex: none; width: 336px; max-height: 100%; display: flex; flex-direction: column; overflow: hidden;
+  background: #fff; border: 1px solid var(--border); border-radius: var(--r-xl); box-shadow: var(--shadow-sm);
 }
 .board.two .col { flex: 1 1 0; min-width: 336px; }
-.col-head { display: flex; flex-direction: column; gap: 6px; margin-bottom: 16px; }
-.col-head:last-child { margin-bottom: 0; }
+.col-head {
+  flex: none; display: flex; flex-direction: column; gap: 6px; padding: 16px 16px 12px;
+  position: relative; z-index: 1; background: #fff; transition: box-shadow .15s;
+}
+.col.scrolled .col-head { box-shadow: 0 1px 0 var(--border), 0 4px 8px -4px rgba(16, 24, 40, .12); }
 .col-title { display: flex; justify-content: space-between; gap: 8px; font-size: 18px; line-height: 28px; font-weight: 600; }
 .col-title span:last-child { font-variant-numeric: tabular-nums; }
 .bar { display: flex; align-items: center; gap: 4px; }
@@ -228,9 +232,12 @@ img { display: block; }
 .fill.orange { background: var(--orange); }
 .fill.grey { background: #a3a3a3; }
 .pct { width: 34px; text-align: right; font-size: 12px; line-height: 16px; color: var(--muted); font-variant-numeric: tabular-nums; }
-.cards { display: flex; flex-direction: column; gap: 12px; }
+.cards {
+  flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior-y: contain;
+  display: flex; flex-direction: column; gap: 12px; padding: 4px 16px 16px; scrollbar-width: thin;
+}
 .cards:empty { display: none; }
-.col-head:has(+ .cards:empty) { margin-bottom: 0; }
+.col-head:has(+ .cards:empty) { padding-bottom: 16px; }
 .more { width: 100%; }
 
 .ocard {
@@ -432,7 +439,7 @@ body.touring .tour-launch { display: none; }
 }
 @media (max-width: 640px) {
   .rail { display: none; }
-  .content { padding: 12px 16px 48px; }
+  .content { padding: 12px 16px 16px; }
   .board { margin: 0 -16px; padding: 0 16px 12px; }
   .col { width: min(336px, calc(100vw - 40px)); }
   .board.two .col { min-width: min(336px, calc(100vw - 40px)); }
@@ -451,7 +458,8 @@ body.touring .tour-launch { display: none; }
 }
 
 @media (max-width: 400px) {
-  .col { padding: 12px; }
+  .col-head { padding: 12px 12px 10px; }
+  .cards { padding: 4px 12px 12px; }
   .ocard { padding: 20px 12px; }
   .row { font-size: 13px; }
 }

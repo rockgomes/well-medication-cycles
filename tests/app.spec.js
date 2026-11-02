@@ -132,6 +132,27 @@ test.describe('cycle board', () => {
     await expect(page.locator('[data-cycle-range]')).not.toHaveText(before);
   });
 
+  test('the page stops when the cycle bar reaches the top', async ({ page }) => {
+    await page.goto(PAGE);
+    await page.evaluate(() => scrollTo(0, 99999));
+    const top = await page.locator('[data-tour="cycles"]').evaluate(el => el.getBoundingClientRect().top);
+    expect(Math.abs(top - 76)).toBeLessThanOrEqual(1);
+  });
+
+  test('each column scrolls on its own and loads more cards', async ({ page }) => {
+    await page.goto(PAGE);
+    await page.evaluate(() => scrollTo(0, 99999));
+    const y = await page.evaluate(() => scrollY);
+    const col = page.locator('[data-cards="flowrx"]');
+    await expect(col.locator('.ocard')).toHaveCount(30);
+    await col.hover();
+    for (let i = 0; i < 6; i++) await page.mouse.wheel(0, 2000);
+    await expect.poll(() => col.locator('.ocard').count()).toBeGreaterThan(30);
+    expect(await col.evaluate(el => el.scrollTop)).toBeGreaterThan(0);
+    expect(await page.evaluate(() => scrollY)).toBe(y);
+    await expect(page.locator('[data-col="flowrx"]')).toHaveClass(/scrolled/);
+  });
+
   test('the cycle menu jumps to any cycle', async ({ page }) => {
     await page.goto(PAGE);
     await page.locator('[data-cycle-menu]').click();
